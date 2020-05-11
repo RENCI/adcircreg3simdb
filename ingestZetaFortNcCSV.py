@@ -29,10 +29,10 @@ def ingestData(dirpath,innc):
         startdate = datetime(2000,9,1,0,0,0)
         startsecond = datetime.timestamp(startdate)
 
-        time = nc.variables['time'][:].data
+        dtime = nc.variables['time'][:].data
         lon =nc.variables['x'][:].data
 
-        ntime = len(time)
+        ntime = len(dtime)
         ncells = len(lon)
         node = np.arange(ncells)
 
@@ -48,12 +48,12 @@ def ingestData(dirpath,innc):
             findex = np.where(zeta_data==min(zeta_data))
             zeta_data[findex] = np.nan
 
-            timestamp = np.array([str(time[i])] * ncells)
+            timestamp = np.array([str(dtime[i])] * ncells)
 
             df = pd.DataFrame({'node': node, 'zeta': zeta_data, 'timestamp': timestamp}, columns=['node', 'zeta', 'timestamp'])
 
             outcsvfile = "_".join(innc.split('/')[len(innc.split('/'))-1].split('_')[0:2]) + '_' + \
-                  str(time[i]) + '.fort.63_mod.csv'
+                  str(dtime[i]) + '.fort.63_mod.csv'
             df.to_csv('csvfort/'+outcsvfile, encoding='utf-8', header=True, index=False)
 
             stream = os.popen('timescaledb-parallel-copy --db-name postgres --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
