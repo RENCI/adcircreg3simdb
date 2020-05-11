@@ -63,8 +63,8 @@ RUN /etc/init.d/postgresql start &&\
     psql --command "ALTER USER postgres PASSWORD 'postgres';" &&\
     psql --command "CREATE EXTENSION postgis;" &&\
     psql --command "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" &&\
-    psql --command "create user data with encrypted password 'adcirc';" &&\
-    psql --command "grant all privileges on database postgres to data;" 
+    psql --command "CREATE USER data WITH ENCRYPTED PASSWORD 'adcirc';" &&\
+    psql --command "GRANT ALL PRIVILEGES ON DATABASE postgres TO data;" 
 
 USER root 
 # tune tilescaledb
