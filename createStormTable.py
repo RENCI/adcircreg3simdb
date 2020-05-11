@@ -38,8 +38,8 @@ def createtable(tablename, timeinterval):
             conn.close()
 
 # Runs the programs.
-dirpath = "/home/data/zip/"
-storms = [f for f in glob.glob(dirpath+"*.zip")]
+dirpath = "/home/data/nc/"
+storms = [f for f in glob.glob(dirpath+"*.nc")]
 dirlength = len(dirpath)
 
 for storm in storms:
