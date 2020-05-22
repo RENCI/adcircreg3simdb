@@ -21,7 +21,6 @@ Your now should be able to access the container shell using the following comman
 
 docker exec -it region3db_container bash
 
-
 If you are using the container with volumes you will need to issue the following commands as postgres:
 su postgres
 cd /var/local/postgresql
@@ -30,7 +29,6 @@ vi /etc/postgresql/11/main/postresql.conf
 change data_directory from /var/lib/postgresql to /var/local/postgresql
 
 This will change the postgresql data directory to /var/local/postgresql utilizing the disk space there.
-
 
 Next you will need to restart postgresql as root:
 service postgresql restart
@@ -57,7 +55,7 @@ git config --global user.email "jmpmcman@renci.org"
 git config --global user.name "jmpmcmanus"
 
 ssh-keygen -t rsa
-add id_rsa.pub to https://github.com/jmpmcmanus keys
+add id_rsa.pub to https://github.com/yourgithubaccount keys
 git clone git@github.com:RENCI/adcircreg3simdb.git 
 
 mkdir nc csv
