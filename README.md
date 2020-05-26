@@ -13,6 +13,14 @@ volumes on /projects/regionthree/. In this case you just run:
 
 The second case is to create volumes on /projects/regionthree/. In that case you edit the createcontainer.sh
 commenting out the existing container command, and then uncommenting the container command the uses volumes.
+You will also need to remove comment out on the line:
+
+RUN useradd --no-log-init -r -u 1324 data
+
+in the Docker file, and comment out the line:
+
+#RUN useradd --no-log-init -r data
+  
 Then you run:
 
 ./createcontainer.sh
