@@ -33,7 +33,7 @@ If you are using the container with volumes you will need to issue the following
 su postgres
 cd /var/local/postgresql
 mv /var/lib/postgresql/11 .
-vi /etc/postgresql/11/main/postresql.conf
+vi /etc/postgresql/11/main/postgresql.conf
 change data_directory from /var/lib/postgresql to /var/local/postgresql
 
 This will change the postgresql data directory to /var/local/postgresql utilizing the disk space there.
