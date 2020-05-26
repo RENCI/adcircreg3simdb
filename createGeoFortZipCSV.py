@@ -23,6 +23,6 @@ def createZipFile(dirpath, infile):
 
 dirpath = '/home/data/'
 #infile = 'bp1_dp1r2b1c2h1l1_fort.63_mod.nc'
-infile = sys.argv[1]
+infile = sys.argv[1].lower()+"_fort.63_mod.nc'
 createZipFile(dirpath, infile)
 
