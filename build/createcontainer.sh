@@ -5,7 +5,7 @@ docker run -it --name region3db_container --shm-size=4g \
    -d region3db_image /bin/bash
 
 # setup specific to adcirc-db
-#docker run -ti --name region3db_container --shm-size=4g
+#docker run -ti --name region3db_container --shm-size=4g \
 #   --network region3db_network \
 #   -p 5434:5432 \
 #   --volume /projects/regionthree/ingestProcessing:/home/data \
