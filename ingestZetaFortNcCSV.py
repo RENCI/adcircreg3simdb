@@ -35,7 +35,8 @@ def createtable(storm, timeinterval):
         cur.execute("""CREATE TABLE %(table_name)s (
                 node INTEGER,
                 zeta NUMERIC,
-                timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                PRIMARY KEY(timestamp, node)
             );""",
         {'table_name': AsIs(tablename)})
         cur.execute("""SELECT create_hypertable(%(table_name)s, 'timestamp', 'node', 2, create_default_indexes=>FALSE,
@@ -61,7 +62,7 @@ def ingestData(dirpath,innc):
     if len([f for f in glob.glob("/home/data/ingest")]) == 0:
         os.mkdir("/home/data/ingest")
 
-    tablename = innc.split('.')[0].lower()+'63'
+    tablename = innc.lower().split('.')[0].lower()+'63'
 
     with open('/home/data/ingest/'+tablename+'.csv', 'a') as file:
         file.write('records_ingested,time_lapsed\n')
