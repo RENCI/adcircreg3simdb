@@ -60,9 +60,9 @@ git clone git@github.com:RENCI/adcircreg3simdb.git
 
 mkdir nc csv
 cd adcircreg3simdb 
-sg postgres -c './getRegion3NetCDF4.py fort'
-sg postgres -c './createGeoFortZipCSV.py'
+sg postgres -c './ingestZetaFortNcCSV.py storm_name'
+sg postgres -c './createGeoFortZipCSV.py storm_name'
 ./region3db_fort_geom.sh
 ./createStormTable.py
-sg postgres -c './ingestZetaFortNcCSV.py'
 
+example storm name:  BP1_dp1r1b1c1h1l1

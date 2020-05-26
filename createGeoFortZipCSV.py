@@ -1,7 +1,7 @@
 #!/home/data/anaconda3/bin/python
 # -*- coding: utf-8 -*-
 
-import os
+import os, sys
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -22,6 +22,7 @@ def createZipFile(dirpath, infile):
 
 
 dirpath = '/home/data/'
-infile = 'bp1_dp1r2b1c2h1l1_fort.63_mod.nc'
+#infile = 'bp1_dp1r2b1c2h1l1_fort.63_mod.nc'
+infile = sys.argv[1]
 createZipFile(dirpath, infile)
 
