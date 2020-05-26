@@ -62,7 +62,8 @@ def ingestData(dirpath,innc):
     if len([f for f in glob.glob("/home/data/ingest")]) == 0:
         os.mkdir("/home/data/ingest")
 
-    tablename = innc.lower().split('.')[0].lower()+'63'
+    innc = innc.lower()
+    tablename = innc.split('.')[0]+'63'
 
     with open('/home/data/ingest/'+tablename+'.csv', 'a') as file:
         file.write('records_ingested,time_lapsed\n')
