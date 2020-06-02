@@ -76,6 +76,6 @@ mkdir nc csv
 cd adcircreg3simdb 
 sg postgres -c './ingestZetaFortNcCSV.py storm_name'
 sg postgres -c './createGeoFortZipCSV.py storm_name'
-./region3db_fort_geom.sh
+sg postgres -c './ingestGeoFortCSV.py'
 
 example storm name:  BP1_dp1r1b1c1h1l1
