@@ -6,7 +6,7 @@ from psycopg2.extensions import AsIs
 
 def gettimestamps(tablename):
     try:
-        conn = psycopg2.connect("dbname='postgres' user='data' host='localhost' port='5432' password='adcirc'")
+        conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
@@ -34,7 +34,7 @@ def gettimestamps(tablename):
 def dropview(tablename, timestamp):
     viewname = "_".join([tablename, "".join("".join(timestamp.split(':')[0:2]).split('-')[1:3])])
     try:
-        conn = psycopg2.connect("dbname='postgres' user='data' host='localhost' port='5432' password='adcirc'")
+        conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")

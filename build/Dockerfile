@@ -61,10 +61,11 @@ RUN echo "shared_preload_libraries = 'timescaledb'" >> /etc/postgresql/11/main/p
 #       allows the RUN command to span multiple lines.
 RUN /etc/init.d/postgresql start &&\
     psql --command "ALTER USER postgres PASSWORD 'postgres';" &&\
-    psql --command "CREATE EXTENSION postgis;" &&\
-    psql --command "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" &&\
-    psql --command "CREATE USER data WITH ENCRYPTED PASSWORD 'adcirc';" &&\
-    psql --command "GRANT ALL PRIVILEGES ON DATABASE postgres TO data;" 
+    psql --command "CREATE DATABASE reg3sim" &&\
+    psql -d reg3sim --command "CREATE EXTENSION postgis;" &&\
+    psql -d reg3sim --command "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" &&\
+    psql -d reg3sim --command "CREATE USER data WITH ENCRYPTED PASSWORD 'adcirc';" &&\
+    psql -d reg3sim --command "GRANT ALL PRIVILEGES ON DATABASE reg3sim TO data;" 
 
 USER root 
 # tune tilescaledb

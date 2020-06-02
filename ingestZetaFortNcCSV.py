@@ -26,7 +26,7 @@ def getRegion3NetCDF4(storm):
 def createtable(storm, timeinterval):
     tablename = storm.lower()
     try:
-        conn = psycopg2.connect("dbname='postgres' user='data' host='localhost' port='5432' password='adcirc'")
+        conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
@@ -105,7 +105,7 @@ def ingestData(dirpath,innc):
                   str(dtime[i]) + '.fort.63_mod.csv'
             df.to_csv('csvfort/'+outcsvfile, encoding='utf-8', header=True, index=False)
 
-            stream = os.popen('timescaledb-parallel-copy --db-name postgres --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
+            stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
             output = stream.read()
 
             os.remove('csvfort/'+outcsvfile)

@@ -39,9 +39,11 @@ change data_directory from /var/lib/postgresql to /var/local/postgresql
 This will change the postgresql data directory to /var/local/postgresql utilizing the disk space there.
 
 Next you will need to restart postgresql as root:
+
 service postgresql restart
 
 Your will then need to set up data processing as user data:
+
 su data
 bash 
 cd /home/data

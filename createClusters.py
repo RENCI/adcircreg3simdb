@@ -8,7 +8,7 @@ def addgeom2163():
     tablename = 'r3sim_fort_geom'
     indexname = tablename+'_geom2163_index'
     try:
-        conn = psycopg2.connect("dbname='postgres' user='data' host='localhost' port='5432' password='adcirc'")
+        conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
@@ -36,7 +36,7 @@ def createclusters(cluster):
     tablename = 'r3sim_fort_geom'
     clusternode = 'cluster_node_'+cluster
     try:
-        conn = psycopg2.connect("dbname='postgres' user='data' host='localhost' port='5432' password='adcirc'")
+        conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")

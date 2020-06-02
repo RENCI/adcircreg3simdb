@@ -5,9 +5,9 @@ import psycopg2, glob, sys
 from psycopg2.extensions import AsIs
 
 def createstormtable(storm, cluster, timeinterval):
-    tablename = storm.lower()+'_fort_'+cluster
+    tablename = storm.lower()+'_fort63_'+cluster
     try:
-        conn = psycopg2.connect("dbname='postgres' user='data' host='localhost' port='5432' password='adcirc'")
+        conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
@@ -40,11 +40,11 @@ def createstormtable(storm, cluster, timeinterval):
             conn.close()
 
 def intostormtable(storm, cluster):
-    intablename = storm.lower()+'_fort'
-    outtablename = storm.lower()+'_fort_'+cluster
+    intablename = storm.lower()+'_fort63'
+    outtablename = storm.lower()+'_fort63_'+cluster
     clusternode = 'cluster_node_'+cluster
     try:
-        conn = psycopg2.connect("dbname='postgres' user='data' host='localhost' port='5432' password='adcirc'")
+        conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
