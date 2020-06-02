@@ -63,6 +63,9 @@ def intostormtable(storm, cluster):
                 GROUP BY Z.timestamp, G.%(cluster_node)s
                 ORDER BY node""",
             {'in_table_name': AsIs(intablename), 'out_table_name': AsIs(outtablename), 'cluster_node': AsIs(clusternode)})
+        cur.execute("""COMMIT""")
+        cur.execute("""ANALYZE %(out_table_name)s""",
+                {'out_table_name': AsIs(outtablename)})
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
