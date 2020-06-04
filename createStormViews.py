@@ -41,8 +41,10 @@ def gettimestamps(storm, cluster):
 def createview(storm, cluster, timestamp):
     if cluster.lower() == 'none':
         tablename = storm.lower()+'_fort63'
+        geotable = 'r3sim_fort_geom'
     elif cluster.isalpha() == False:
         tablename = storm.lower()+'_fort63_'+cluster
+        geotable = 'r3sim_fort_geom_'+cluster
     else:
         sys.exit('Need to provide cluster, either none or a number')
 
@@ -57,9 +59,10 @@ def createview(storm, cluster, timestamp):
         cur.execute("""CREATE VIEW %(view_name)s AS
                        SELECT Z.node, Z.zeta, Z.timestamp, G.bathymetry, G.geom
                        FROM %(table_name)s AS Z
-                       INNER JOIN r3sim_fort_geom AS G ON (Z.node=G.node)
+                       INNER JOIN %(geo_table)s AS G ON (Z.node=G.node)
                        WHERE Z.timestamp = %(time_stamp)s""",
-                       {'table_name': AsIs(tablename), 'view_name': AsIs(viewname), 'time_stamp':timestamp})
+                       {'table_name': AsIs(tablename), 'geo_table': AsIs(geotable), 
+                        'view_name': AsIs(viewname), 'time_stamp':timestamp})
         cur.execute("""COMMIT""")
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
