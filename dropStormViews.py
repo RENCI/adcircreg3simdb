@@ -4,7 +4,14 @@
 import psycopg2, sys
 from psycopg2.extensions import AsIs
 
-def gettimestamps(tablename):
+def gettimestamps(storm, cluster):
+    if cluster.lower() == 'none':
+        tablename = storm.lower()+'_fort63'
+    elif cluster.isalpha() == False:
+        tablename = storm.lower()+'_fort63_'+cluster
+    else:
+        sys.exit('Need to provide cluster, either none or a number')
+
     try:
         conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
@@ -31,7 +38,14 @@ def gettimestamps(tablename):
         if conn is not None:
             conn.close()
 
-def dropview(tablename, timestamp):
+def dropview(storm, cluster, timestamp):
+    if cluster.lower() == 'none':
+        tablename = storm.lower()+'_fort63'
+    elif cluster.isalpha() == False:
+        tablename = storm.lower()+'_fort63_'+cluster
+    else:
+        sys.exit('Need to provide cluster, either none or a number')
+
     viewname = "_".join([tablename, "".join("".join(timestamp.split(':')[0:2]).split('-')[1:3])])
     try:
         conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
@@ -57,8 +71,9 @@ def dropview(tablename, timestamp):
 #timestamps = f.readlines()
 #f.close()
 
-tablename = sys.argv[1]
-timestamps = gettimestamps(tablename)
+storm = sys.argv[1]
+cluster = sys.argv[2]
+timestamps = gettimestamps(storm, cluster)
 #timestamp = '2000-09-03T16:00:00'
 #print("_".join([tablename, "".join("".join(timestamp.split(':')[0:2]).split('-')[1:3])]))
 #dropview(tablename,timestamp)
@@ -66,5 +81,5 @@ timestamps = gettimestamps(tablename)
 for timestamp in timestamps:
     timestamp = "T".join(timestamp.strip().split(' '))
     #print(tablename,timestamp)
-    dropview(tablename,timestamp)
+    dropview(storm, cluster, timestamp)
 
