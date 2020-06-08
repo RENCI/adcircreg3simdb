@@ -79,10 +79,11 @@ def ingestData(dirpath,innc):
         startsecond = datetime.timestamp(startdate)
 
         dtime = nc.variables['time'][:].data
-        lon =nc.variables['x'][:].data
+        #lon = nc.variables['x'][:].data
+        shape = nc.variables['zeta'].shape
 
         ntime = len(dtime)
-        ncells = len(lon)
+        ncells = shape[1]
         node = np.arange(ncells)
 
         for i in range(ntime):
