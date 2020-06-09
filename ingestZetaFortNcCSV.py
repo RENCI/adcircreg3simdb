@@ -8,10 +8,12 @@ import xarray as xr
 import pandas as pd
 import numpy as np
 from datetime import datetime
+from datetime import timedelta
+from pathlib import Path
+
 import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
-
 
 def getRegion3NetCDF4(storm):
 
@@ -78,23 +80,33 @@ def ingestData(dirpath,innc):
         startdate = datetime(2000,9,1,0,0,0)
         startsecond = datetime.timestamp(startdate)
 
-        dtime = nc.variables['time'][:].data
-        #lon = nc.variables['x'][:].data
-        shape = nc.variables['zeta'].shape
+        try:
+            dtime = nc.variables['time'][:].data
+            lon = nc.variables['x'][:].data
+            ncells = len(lon)
+        except KeyError:
+            Path('/home/data/ingest/'+tablename+'_missingvars.txt').touch()
+
+            intime = nc.variables['time'][:].data
+            dtime = np.empty(0, dtype='datetime64[s]')
+            for tstep in intime:
+                nstep = np.datetime64(str(startdate + timedelta(seconds=tstep*60*60)))
+                dtime= np.append(dtime, nstep)
+
+            shape = nc.variables['zeta'].shape
+            ncells = shape[1]
 
         ntime = len(dtime)
-        ncells = shape[1]
         node = np.arange(ncells)
 
         for i in range(ntime):
             start_time = time.time()
 
             try:
-                zeta = nc.variables['zeta'][i,:]
+                zeta_data = nc.variables['zeta'][i,:].data
             except RuntimeWarning:
                 sys.exit('*** DeprecationWarning: elementwise comparison failed; this will raise an error in the future.')
 
-            zeta_data = zeta.data
             findex = np.where(zeta_data==min(zeta_data))
             zeta_data[findex] = np.nan
 
@@ -103,7 +115,7 @@ def ingestData(dirpath,innc):
             df = pd.DataFrame({'node': node, 'zeta': zeta_data, 'timestamp': timestamp}, columns=['node', 'zeta', 'timestamp'])
 
             outcsvfile = "_".join(innc.split('/')[len(innc.split('/'))-1].split('_')[0:2]) + '_' + \
-                  str(dtime[i]) + '.fort.63_mod.csv'
+                  str("".join("".join(str(dtime[0]).split('-')).split(':'))) + '.fort.63_mod.csv'
             df.to_csv('csvfort/'+outcsvfile, encoding='utf-8', header=True, index=False)
 
             stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
@@ -120,15 +132,7 @@ def ingestData(dirpath,innc):
             file.close()
 
 dirpath = "/home/data/nc/"
-#infiles = [f for f in glob.glob(dirpath+"*.nc")]
-#infiles.sort()
 storm = sys.argv[1]
 getRegion3NetCDF4(storm)
-#innc = infile[dirlength:]
 createtable(storm+'_fort63',"2 hour")
 ingestData(dirpath,storm+'_fort.63_mod.nc')
-
-#for infile in infiles:
-#    innc = infile[dirlength:] 
-#    ingestData(dirpath,innc)
-
