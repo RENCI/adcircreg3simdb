@@ -1,0 +1,11 @@
+name: adcirc
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - netcdf4
+  - xarray
+  - pip:
+      - psycopg2-binary
+      - wget

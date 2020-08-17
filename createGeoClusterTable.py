@@ -1,4 +1,4 @@
-#!/home/data/anaconda3/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import psycopg2, glob, sys

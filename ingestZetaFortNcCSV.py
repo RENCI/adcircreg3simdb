@@ -1,4 +1,4 @@
-#!/home/data/anaconda3/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os, time, glob, wget, sys
@@ -18,12 +18,12 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 def getRegion3NetCDF4(storm):
 
     url = 'http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/fort.63_mod.nc'
-    os.chdir('/home/data/nc/')
+    os.chdir('/home/data/ingestProcessing/nc/')
 
     filename = wget.download(url)
     prefix = "_".join(url.split('/')[7].split('_')[:2]).lower()
 
-    os.rename(filename,'/home/data/nc/'+prefix+'_'+filename)
+    os.rename(filename,'/home/data/ingestProcessing/nc/'+prefix+'_'+filename)
 
 def createtable(storm, timeinterval):
     tablename = storm.lower()
@@ -61,13 +61,13 @@ def createtable(storm, timeinterval):
             conn.close()
 
 def ingestData(dirpath,innc):
-    if len([f for f in glob.glob("/home/data/ingest")]) == 0:
-        os.mkdir("/home/data/ingest")
+    if len([f for f in glob.glob("/home/data/ingestProcessing/ingest")]) == 0:
+        os.mkdir("/home/data/ingestProcessing/ingest")
 
     innc = innc.lower()
     tablename = innc.split('.')[0]+'63'
 
-    with open('/home/data/ingest/'+tablename+'.csv', 'a') as file:
+    with open('/home/data/ingestProcessing/ingest/'+tablename+'.csv', 'a') as file:
         file.write('records_ingested,time_lapsed\n')
 
     file.close()
@@ -85,7 +85,7 @@ def ingestData(dirpath,innc):
             lon = nc.variables['x'][:].data
             ncells = len(lon)
         except KeyError:
-            Path('/home/data/ingest/'+tablename+'_missingvars.txt').touch()
+            Path('/home/data/ingestProcessing/ingest/'+tablename+'_missingvars.txt').touch()
 
             intime = nc.variables['time'][:].data
             dtime = np.empty(0, dtype='datetime64[s]')
@@ -126,12 +126,12 @@ def ingestData(dirpath,innc):
             stop_time = time.time()
             time_lapsed = stop_time - start_time
 
-            with open('/home/data/ingest/'+tablename+'.csv', 'a') as file:
+            with open('/home/data/ingestProcessing/ingest/'+tablename+'.csv', 'a') as file:
                 file.write(output.strip()+','+str(time_lapsed)+'\n')
 
             file.close()
 
-dirpath = "/home/data/nc/"
+dirpath = "/home/data/ingestProcessing/nc/"
 storm = sys.argv[1]
 getRegion3NetCDF4(storm)
 createtable(storm+'_fort63',"2 hour")

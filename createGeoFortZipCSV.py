@@ -1,4 +1,4 @@
-#!/home/data/anaconda3/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os, sys
@@ -21,7 +21,7 @@ def createZipFile(dirpath, infile):
         df.to_csv(outcsvfile, encoding='utf-8', header=True, index=False)
 
 
-dirpath = '/home/data/'
+dirpath = '/home/data/ingestProcessing/'
 #infile = 'bp1_dp1r2b1c2h1l1_fort.63_mod.nc'
 infile = sys.argv[1].lower()+'_fort.63_mod.nc'
 createZipFile(dirpath, infile)

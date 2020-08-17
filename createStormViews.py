@@ -1,4 +1,4 @@
-#!/home/jmcmanus/anaconda3/envs/surge/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import psycopg2, sys
