@@ -7,14 +7,6 @@
 
 cd build
 
-###### You will also need to remove comment out on the line:
-
-RUN useradd --no-log-init -r -u 1324 data
-
-###### Edit the Docker file, and comment out the line:
-
-RUN useradd --no-log-init -r data
-
 ###### Then run:
 
 ./buildimage.sh  
@@ -60,7 +52,7 @@ docker exec -it --user data region3db_container bash
 ###### You can run the ingest scripts with the following commands:
 
 cd adcircreg3simdb   
-conda activate adcirc
+conda activate adcirc  
 sg postgres -c './ingestZetaFortNcCSV.py storm_name'  
 sg postgres -c './createGeoFortZipCSV.py storm_name'  
 sg postgres -c './ingestGeoFortCSV.py'  
