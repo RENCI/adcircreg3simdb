@@ -9,7 +9,7 @@ LABEL version="1.0"
 LABEL description="regin3db image with Dockerfile."
 
 # Set user environment info, USER_ID and USER_GID are 1324, and PG_ID and PG_GID are 70 on adcric-db
-ENV USER=data GROUP=data USER_ID=1001 USER_GID=1001 PASSWORD=adcircdata CONDAENV=adcirc PG_USER=postgres PG_GROUP=postgres PG_ID=70 PG_GID=70 PG_PASSWORD=postgres
+ENV USER=data GROUP=data USER_ID=1324 USER_GID=1324 PASSWORD=adcircdata CONDAENV=adcirc PG_USER=postgres PG_GROUP=postgres PG_ID=70 PG_GID=70 PG_PASSWORD=postgres
 
 # update sources list
 # install basic apps, one per line for better caching
