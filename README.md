@@ -12,17 +12,13 @@ cd build
 ./buildimage.sh  
 ./createnetwork.sh
 
-###### There are two options for creating the container. The first it to create a container without creating 
-###### volumes on /projects/regionthree/. In this case you just run:
+###### When creating the container you need to define the volume where the postgresql data, and output data will be 
+###### written too. This disk space for this volume needs to large enough to write all of the Region 3 simulation 
+###### data. At RENCI we are using /projects/regionthree/ which is accessible on the dcirc-db.edc.renci.org VM.
+###### You can use you own directory path. To create the container you run the following command using you own
+###### directory path:
 
-./createcontainer.sh
-
-###### The second case is to create volumes on /projects/regionthree/. In that case you edit the createcontainer.sh
-###### commenting out the existing container command, and then uncommenting the container command the uses volumes.
- 
-###### Then you run:
-
-./createcontainer.sh
+./createcontainer.sh /projects/regionthree
 
 ###### Your now should be able to access the container shell using the following command:
 
