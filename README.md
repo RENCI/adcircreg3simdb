@@ -49,7 +49,8 @@ docker exec -it --user data region3db_container bash
 
 cd adcircreg3simdb   
 conda activate adcirc  
-sg postgres -c './ingestZetaFortNcCSV.py storm_name'  
+sg postgres -c './ingestZetaFortNcCSV.py storm_name'
+sg postgres -c './ingestSwanAllNcCSV.py storm_name'  
 sg postgres -c './createGeoFortZipCSV.py storm_name'  
 sg postgres -c './ingestGeoFortCSV.py'  
 
