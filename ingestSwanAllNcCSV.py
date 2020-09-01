@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, time, glob, wget, sys, psycopg2, pdb
+import os, time, glob, wget, sys, psycopg2
 from psycopg2.extensions import AsIs
 import xarray as xr
 import pandas as pd
@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 def getRegion3NetCDF4(dirpath, storm):
-    urls = ['http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_HS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_RTP_mod.63.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_DIR.63_mod.nc']
+    urls = ['http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_HS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_TPS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_DIR.63_mod.nc']
     os.chdir(dirpath+'nc/')
 
     for url in urls:
@@ -36,7 +36,7 @@ def createtable(storm, timeinterval):
         cur.execute("""CREATE TABLE %(table_name)s (
                 node INTEGER,
                 hs NUMERIC,
-                rtp NUMERIC,
+                tps NUMERIC,
                 dir NUMERIC,
                 timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                 PRIMARY KEY(timestamp, node)
@@ -84,8 +84,7 @@ def ingestData(dirpath,storm,filesuffixes):
         nc2 = xr.open_dataset(inncs[2])
 
         try:
-            dsecond = nc0.variables['time'][:].data
-            dtime = pd.to_datetime(dsecond, unit='s', origin=pd.Timestamp('2000-09-01'))
+            dtime = nc0.variables['time'][:].data
             lon = nc0.variables['x'][:].data
             ncells = len(lon)
         except KeyError:
@@ -108,21 +107,21 @@ def ingestData(dirpath,storm,filesuffixes):
 
             try:
                 hs_data = nc0.variables['hs'][i,:].data
-                rtp_data = nc1.variables['rtp'][i,:].data
+                tps_data = nc1.variables['tps'][i,:].data
                 dir_data = nc2.variables['dir'][i,:].data
             except RuntimeWarning:
                 sys.exit('*** DeprecationWarning: elementwise comparison failed; this will raise an error in the future.')
 
             findex = np.where(hs_data==min(hs_data))
             hs_data[findex] = np.nan
-            findex = np.where(rtp_data==min(rtp_data))
-            rtp_data[findex] = np.nan
+            findex = np.where(tps_data==min(tps_data))
+            tps_data[findex] = np.nan
             findex = np.where(dir_data==min(dir_data))
             dir_data[findex] = np.nan
 
             timestamp = np.array([str(dtime[i])] * ncells)
 
-            df = pd.DataFrame({'node': node, 'hs': hs_data, 'rtp': rtp_data, 'dir': dir_data, 'timestamp': timestamp}, columns=['node', 'hs', 'rtp', 'dir', 'timestamp'])
+            df = pd.DataFrame({'node': node, 'hs': hs_data, 'tps': tps_data, 'dir': dir_data, 'timestamp': timestamp}, columns=['node', 'hs', 'tps', 'dir', 'timestamp'])
 
             outcsvfile = "_".join(inncs[0].split('/')[-1].split('_')[0:2]) + '_' + \
                   "T".join(str("".join("".join(str(dtime[0]).split('-')).split(':'))).split(' ')) + '.swan.63_mod.csv'
@@ -143,7 +142,7 @@ def ingestData(dirpath,storm,filesuffixes):
 
 dirpath = "/home/data/ingestProcessing/"
 storm = sys.argv[1]
-#getRegion3NetCDF4(dirpath,storm)
-#createtable(storm+'_swan63',"2 hour")
-filesuffixes = ['_swan_HS.63_mod.nc','_swan_RTP_mod.63.nc','_swan_DIR.63_mod.nc']
+getRegion3NetCDF4(dirpath,storm)
+createtable(storm+'_swan63',"2 hour")
+filesuffixes = ['_swan_HS.63_mod.nc','_swan_TPS.63_mod.nc','_swan_DIR.63_mod.nc']
 ingestData(dirpath,storm,filesuffixes)
