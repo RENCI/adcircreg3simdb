@@ -65,10 +65,6 @@ RUN apt-get update && apt-get install -qy postgresql-11-postgis-3 \
     timescaledb-postgresql-11 &&\
     apt-get -qy autoremove
 
-# add scripts to the container
-#ADD rootbashrc /root/.bashrc
-#ADD rootprofile /root/.profile
-
 # add user postgres
 USER $PG_USER
 
