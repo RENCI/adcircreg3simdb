@@ -41,6 +41,10 @@ change data_directory from /var/lib/postgresql to /var/local/postgresql
 
 service postgresql restart
 
+###### Then run a psql command (password is postgres) to load region3-function.sql into the database:
+
+psql -U postgres --password -d reg3sim -p 5432 -h localhost -f /home/data/adcircreg3simdb/region3-function.sql
+
 ###### After exiting from postgresql and root you can logon to the data account with the folowing command:
 
 docker exec -it --user data region3db_container bash

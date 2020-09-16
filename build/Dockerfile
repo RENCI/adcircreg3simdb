@@ -81,6 +81,8 @@ RUN echo "shared_preload_libraries = 'timescaledb'" >> /etc/postgresql/11/main/p
     psql -d reg3sim --command "CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;" &&\
     psql -d reg3sim --command "CREATE USER data WITH ENCRYPTED PASSWORD 'adcirc';" &&\
     psql -d reg3sim --command "GRANT ALL PRIVILEGES ON DATABASE reg3sim TO data;" 
+    #psql -d reg3sim --command -f /home/data/adcircreg3simdb/region3-function.sql
+
 
 USER root 
 
@@ -104,4 +106,3 @@ CMD ["/usr/lib/postgresql/11/bin/postgres", "-D", "/var/lib/postgresql/11/main",
 # locales to UTF-8
 RUN locale-gen C.UTF-8 && /usr/sbin/update-locale LANG=C.UTF-8
 ENV LC_ALL C.UTF-8
-
