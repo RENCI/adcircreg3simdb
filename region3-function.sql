@@ -1,5 +1,5 @@
 CREATE OR REPLACE
--- http://localhost:7800/public.region3_sim_storms/13/2362/3138.pbf?&stormtable=var_dp3r3b1c1h1l1_fort63&timestep=2000-09-05T19:30:00&properties=node,zeta,bathymetry
+-- http://adcirc-db.renci.org/public.region3_sim_storms/13/2362/3138.pbf?&stormtable=var_dp3r3b1c1h1l1_fort63&timestep=2000-09-05T19:30:00&properties=node,zeta,bathymetry
 FUNCTION public.region3_sim_storms(z integer, x integer, y integer, stormtable text, timestep text)
 RETURNS bytea
 AS $$
@@ -16,7 +16,7 @@ BEGIN
           SELECT ST_TileEnvelope(%s, %s, %s) AS geomclip, ST_Expand(ST_TileEnvelope(%s, %s, %s), 256) AS geombuf 
         ),
         node_ids AS
-          (SELECT G.node, G.geom
+          (SELECT G.node, G.geom, G.bathymetry
            FROM r3sim_fort_geom AS G, bounds
            WHERE ST_Intersects(G.geom, ST_Transform(bounds.geombuf, 4326))),
         mvtgeom AS (
@@ -28,7 +28,7 @@ BEGIN
              AND node IN (SELECT node FROM node_ids)) S
             LEFT JOIN
             (SELECT ST_AsMVTGeom(ST_Transform(G.geom, 3857), bounds.geomclip, 4096, 256, true) AS geom, G.node AS node, G.bathymetry AS bathymetry
-             FROM r3sim_fort_geom AS G, bounds
+             FROM node_ids AS G, bounds
              WHERE ST_Intersects(G.geom, ST_Transform(bounds.geombuf, 4326))) T
             ON S.node = T.node
         )
@@ -44,7 +44,7 @@ BEGIN
           SELECT ST_TileEnvelope(%s, %s, %s) AS geomclip, ST_Expand(ST_TileEnvelope(%s, %s, %s), 256) AS geombuf 
         ),
         node_ids AS
-          (SELECT G.node, G.geom
+          (SELECT G.node, G.geom, G.bathymetry
            FROM r3sim_fort_geom AS G, bounds
            WHERE ST_Intersects(G.geom, ST_Transform(bounds.geombuf, 4326))),
         mvtgeom AS (
@@ -56,7 +56,7 @@ BEGIN
              AND node IN (SELECT node FROM node_ids)) S
             LEFT JOIN
             (SELECT ST_AsMVTGeom(ST_Transform(G.geom, 3857), bounds.geomclip, 4096, 256, true) AS geom, G.node AS node, G.bathymetry AS bathymetry
-             FROM r3sim_fort_geom AS G, bounds
+             FROM node_ids AS G, bounds
              WHERE ST_Intersects(G.geom, ST_Transform(bounds.geombuf, 4326))) T
             ON S.node = T.node
         )
