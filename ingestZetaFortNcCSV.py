@@ -73,8 +73,8 @@ def ingestData(dirpath, innc):
     file.close()
 
     os.chdir(dirpath+'nc')
-    if len([f for f in glob.glob("csvfort")]) == 0:
-        os.mkdir("csvfort")
+    if len([f for f in glob.glob("csvfort63")]) == 0:
+        os.mkdir("csvfort63")
 
     with xr.open_dataset(innc) as nc:
         startdate = datetime(2000,9,1,0,0,0)
@@ -115,12 +115,12 @@ def ingestData(dirpath, innc):
 
             outcsvfile = "_".join(innc.split('/')[len(innc.split('/'))-1].split('_')[0:2]) + '_' + \
                   str("".join("".join(str(dtime[0]).split('-')).split(':'))) + '.fort.63_mod.csv'
-            df.to_csv('csvfort/'+outcsvfile, encoding='utf-8', header=True, index=False)
+            df.to_csv('csvfort63/'+outcsvfile, encoding='utf-8', header=True, index=False)
 
-            stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
+            stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort63/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
             output = stream.read()
 
-            os.remove('csvfort/'+outcsvfile)
+            os.remove('csvfort63/'+outcsvfile)
 
             stop_time = time.time()
             time_lapsed = stop_time - start_time

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, time, glob, wget, sys, psycopg2
+import os, time, glob, wget, sys
+import psycopg2, glob
 from psycopg2.extensions import AsIs
 import xarray as xr
 import pandas as pd
@@ -15,14 +16,14 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 def getRegion3NetCDF4(dirpath, storm):
-    urls = ['http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_HS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_TPS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_DIR.63_mod.nc']
-    os.chdir(dirpath+'nc/')
 
-    for url in urls:
-        filename = wget.download(url)
-        prefix = "_".join(url.split('/')[7].split('_')[:2]).lower()
+    url = 'http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/fort.64.nc'
+    os.chdir(dirpath+'nc')
 
-        os.rename(filename,dirpath+'nc/'+prefix+'_'+filename)
+    filename = wget.download(url)
+    prefix = "_".join(url.split('/')[7].split('_')[:2]).lower()
+
+    os.rename(filename, dirpath+'nc/'+prefix+'_'+filename)
 
 def createtable(storm, timeinterval):
     tablename = storm.lower()
@@ -35,9 +36,8 @@ def createtable(storm, timeinterval):
         cur.execute("""BEGIN""")
         cur.execute("""CREATE TABLE %(table_name)s (
                 node INTEGER,
-                hs NUMERIC,
-                tps NUMERIC,
-                dir NUMERIC,
+                u_vel NUMERIC,
+                v_vel NUMERIC
                 timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                 PRIMARY KEY(timestamp, node)
             );""",
@@ -61,12 +61,12 @@ def createtable(storm, timeinterval):
         if conn is not None:
             conn.close()
 
-def ingestData(dirpath,storm,filesuffixes):
+def ingestData(dirpath, innc):
     if len([f for f in glob.glob(dirpath+"ingest")]) == 0:
         os.mkdir(dirpath+"ingest")
 
-    storm = storm.lower()
-    tablename = storm+'_swan'+'63'
+    innc = innc.lower()
+    tablename = innc.split('.')[0]+'64'
 
     with open(dirpath+'ingest/'+tablename+'.csv', 'a') as file:
         file.write('records_ingested,time_lapsed\n')
@@ -74,29 +74,26 @@ def ingestData(dirpath,storm,filesuffixes):
     file.close()
 
     os.chdir(dirpath+'nc')
-    if len([f for f in glob.glob("csvswan63")]) == 0:
-        os.mkdir("csvswan63")
+    if len([f for f in glob.glob("csvfort64")]) == 0:
+        os.mkdir("csvfort64")
 
-    inncs = [dirpath+'nc/'+storm+filesuffixes[0],dirpath+'nc/'+storm+filesuffixes[1],dirpath+'nc/'+storm+filesuffixes[2]]
-
-    with xr.open_dataset(inncs[0]) as nc0:
-        nc1 = xr.open_dataset(inncs[1])
-        nc2 = xr.open_dataset(inncs[2])
+    with xr.open_dataset(innc) as nc:
+        startdate = datetime(2000,9,1,0,0,0)
 
         try:
-            dtime = nc0.variables['time'][:].data
-            lon = nc0.variables['x'][:].data
+            dtime = nc.variables['time'][:].data
+            lon = nc.variables['x'][:].data
             ncells = len(lon)
         except KeyError:
             Path(dirpath+'ingest/'+tablename+'_missingvars.txt').touch()
 
-            intime = nc0.variables['time'][:].data
+            intime = nc.variables['time'][:].data
             dtime = np.empty(0, dtype='datetime64[s]')
             for tstep in intime:
                 nstep = np.datetime64(str(startdate + timedelta(seconds=tstep*60*60)))
                 dtime= np.append(dtime, nstep)
 
-            shape = nc0.variables['hs'].shape
+            shape = nc.variables['u-vel'].shape
             ncells = shape[1]
 
         ntime = len(dtime)
@@ -106,31 +103,28 @@ def ingestData(dirpath,storm,filesuffixes):
             start_time = time.time()
 
             try:
-                hs_data = nc0.variables['hs'][i,:].data
-                tps_data = nc1.variables['tps'][i,:].data
-                dir_data = nc2.variables['dir'][i,:].data
+                u_vel_data = nc.variables['u-vel'][i,:].data
+                v_vel_data = nc.variables['v-vel'][i,:].data
             except RuntimeWarning:
                 sys.exit('*** DeprecationWarning: elementwise comparison failed; this will raise an error in the future.')
 
-            findex = np.where(hs_data==min(hs_data))
-            hs_data[findex] = np.nan
-            findex = np.where(tps_data==min(tps_data))
-            tps_data[findex] = np.nan
-            findex = np.where(dir_data==min(dir_data))
-            dir_data[findex] = np.nan
+            findex = np.where(u_vel_data==min(u_vel_data))
+            u_vel_data[findex] = np.nan
+            findex = np.where(v_vel_data==min(v_vel_data))
+            v_vel_data[findex] = np.nan
 
             timestamp = np.array([str(dtime[i])] * ncells)
 
-            df = pd.DataFrame({'node': node, 'hs': hs_data, 'tps': tps_data, 'dir': dir_data, 'timestamp': timestamp}, columns=['node', 'hs', 'tps', 'dir', 'timestamp'])
+            df = pd.DataFrame({'node': node, 'u_vel': u_vel_data, 'v_vel': v_vel_data, 'timestamp': timestamp}, columns=['node', 'u_vel', 'v_vel', 'timestamp'])
 
-            outcsvfile = "_".join(inncs[0].split('/')[-1].split('_')[0:2]) + '_' + \
-                  "T".join(str("".join("".join(str(dtime[0]).split('-')).split(':'))).split(' ')) + '.swan.63_mod.csv'
-            df.to_csv('csvswan63/'+outcsvfile, encoding='utf-8', header=True, index=False)
+            outcsvfile = "_".join(innc.split('/')[len(innc.split('/'))-1].split('_')[0:2]) + '_' + \
+                  str("".join("".join(str(dtime[0]).split('-')).split(':'))) + '.fort.64.csv'
+            df.to_csv('csvfort64/'+outcsvfile, encoding='utf-8', header=True, index=False)
 
-            stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvswan63/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
+            stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort64/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
             output = stream.read()
 
-            os.remove('csvswan63/'+outcsvfile)
+            os.remove('csvfort64/'+outcsvfile)
 
             stop_time = time.time()
             time_lapsed = stop_time - start_time
@@ -142,7 +136,6 @@ def ingestData(dirpath,storm,filesuffixes):
 
 dirpath = "/home/data/ingestProcessing/"
 storm = sys.argv[1]
-getRegion3NetCDF4(dirpath,storm)
-createtable(storm+'_swan63',"2 hour")
-filesuffixes = ['_swan_HS.63_mod.nc','_swan_TPS.63_mod.nc','_swan_DIR.63_mod.nc']
-ingestData(dirpath,storm,filesuffixes)
+getRegion3NetCDF4(dirpath, storm)
+createtable(storm+'_fort64',"2 hour")
+ingestData(dirpath, storm+'_fort.64.nc')
