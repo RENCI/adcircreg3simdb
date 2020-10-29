@@ -77,7 +77,7 @@ def ingestData(dirpath, innc):
     if len([f for f in glob.glob("csvfort64")]) == 0:
         os.mkdir("csvfort64")
 
-    with xr.open_dataset(innc) as nc:
+    with xr.open_dataset(innc, drop_variables=['neta', 'nvel']) as nc:
         startdate = datetime(2000,9,1,0,0,0)
 
         try:
