@@ -17,13 +17,14 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 def getRegion3NetCDF4(dirpath, storm):
 
-    url = 'http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/fort.64.nc'
+    url = 'http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/fort.64.nc'
     os.chdir(dirpath+'nc')
 
     filename = wget.download(url)
     prefix = "_".join(url.split('/')[7].split('_')[:2]).lower()
 
     os.rename(filename, dirpath+'nc/'+prefix+'_'+filename)
+    #os.rename(filename, dirpath+'nc/'+storm.lower()+'_'+filename)
 
 def createtable(storm, timeinterval):
     tablename = storm.lower()
@@ -37,7 +38,7 @@ def createtable(storm, timeinterval):
         cur.execute("""CREATE TABLE %(table_name)s (
                 node INTEGER,
                 u_vel NUMERIC,
-                v_vel NUMERIC
+                v_vel NUMERIC,
                 timestamp TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                 PRIMARY KEY(timestamp, node)
             );""",
@@ -137,5 +138,5 @@ def ingestData(dirpath, innc):
 dirpath = "/home/data/ingestProcessing/"
 storm = sys.argv[1]
 getRegion3NetCDF4(dirpath, storm)
-createtable(storm+'_fort64',"2 hour")
+createtable(storm+"_fort64","2 hour")
 ingestData(dirpath, storm+'_fort.64.nc')

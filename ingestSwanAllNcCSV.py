@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 def getRegion3NetCDF4(dirpath, storm):
-    urls = ['http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/swan_HS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/swan_TPS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/swan_DIR.63_mod.nc']
+    urls = ['http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_HS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/swan_TPS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/swan_DIR.63_mod.nc']
     os.chdir(dirpath+'nc/')
 
     for url in urls:
@@ -143,6 +143,6 @@ def ingestData(dirpath,storm,filesuffixes):
 dirpath = "/home/data/ingestProcessing/"
 storm = sys.argv[1]
 getRegion3NetCDF4(dirpath,storm)
-createtable(storm+'_swan63',"2 hour")
+createtable(storm+"_swan63","2 hour")
 filesuffixes = ['_swan_HS.63_mod.nc','_swan_TPS.63_mod.nc','_swan_DIR.63_mod.nc']
 ingestData(dirpath,storm,filesuffixes)

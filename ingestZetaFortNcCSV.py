@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 def getRegion3NetCDF4(dirpath, storm):
 
-    url = 'http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/fort.63_mod.nc'
+    url = 'http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/fort.63_mod.nc'
     os.chdir(dirpath+'nc')
 
     filename = wget.download(url)
@@ -133,5 +133,5 @@ def ingestData(dirpath, innc):
 dirpath = "/home/data/ingestProcessing/"
 storm = sys.argv[1]
 getRegion3NetCDF4(dirpath, storm)
-createtable(storm+'_fort63',"2 hour")
+createtable(storm+"_fort63","2 hour")
 ingestData(dirpath, storm+'_fort.63_mod.nc')
