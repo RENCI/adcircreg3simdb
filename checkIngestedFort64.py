@@ -75,7 +75,7 @@ def getStormPGStats(storm):
 
 def getStormNCStats(storm):
     dirpath = '/home/data/ingestProcessing/'
-    ncvel = xr.open_dataset(dirpath+'nc/'+storm.lower()+'_fort.64.nc')
+    ncvel = xr.open_dataset(dirpath+'nc/'+storm.lower()+'_fort.64.nc', drop_variables=['neta', 'nvel'])
 
     veltime = ncvel.variables['time'][:].data
 
@@ -86,16 +86,16 @@ def getStormNCStats(storm):
     for i in range(len(veltime)):
         timestamp = str(veltime[i])
 
-        uvel_data = ncvel.variables['u_vel'][i,:].data
-        velmin = str(np.nanmin(uvel_data))
+        uvel_data = ncvel.variables['u-vel'][i,:].data
+        uvelmin = str(np.nanmin(uvel_data))
         uvelmax = str(np.nanmax(uvel_data))
         uvelmean = str(np.nanmean(uvel_data))
         uvelmedian = str(np.nanmedian(uvel_data))
-        uveltd = str(np.nanstd(uvel_data))
-        uvelount = str(len(np.argwhere(~np.isnan(uvel_data))))
+        uvelstd = str(np.nanstd(uvel_data))
+        uvelcount = str(len(np.argwhere(~np.isnan(uvel_data))))
         uvelnan = str(len(np.argwhere(np.isnan(uvel_data))))
 
-        vvel_data = ncvel.variables['v_vel'][i,:].data
+        vvel_data = ncvel.variables['v-vel'][i,:].data
         vvelmin = str(np.nanmin(vvel_data))
         vvelmax = str(np.nanmax(vvel_data))
         vvelmean = str(np.nanmean(vvel_data))
