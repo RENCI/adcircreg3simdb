@@ -65,6 +65,34 @@ BEGIN
     )
     INTO result;
     RETURN result;
+  ELSIF stormdtype = 'fort64' THEN
+    EXECUTE format(
+       'WITH
+        bounds AS (
+          SELECT ST_TileEnvelope(%s, %s, %s) AS geomclip, ST_Expand(ST_TileEnvelope(%s, %s, %s), %s) AS geombuf 
+        ),
+        node_ids AS
+          (SELECT G.node, G.geom, G.bathymetry
+           FROM r3sim_fort_geom AS G, bounds
+           WHERE ST_Intersects(G.geom, ST_Transform(bounds.geombuf, 4326))),
+        mvtgeom AS (
+          SELECT T.geom AS geom, S.node AS node, S.u_vel AS u_vel, S.v_vel AS v_vel, T.bathymetry AS bathymetry
+          FROM
+            (SELECT node, u_vel, v_vel, timestamp
+             FROM %s
+             WHERE timestamp = %s 
+             AND node IN (SELECT node FROM node_ids)) S
+            LEFT JOIN
+            (SELECT ST_AsMVTGeom(ST_Transform(G.geom, 3857), bounds.geomclip, 4096, %s, true) AS geom, G.node AS node, G.bathymetry AS bathymetry
+             FROM node_ids AS G, bounds
+             WHERE ST_Intersects(G.geom, ST_Transform(bounds.geombuf, 4326))) T
+            ON S.node = T.node
+        )
+        SELECT ST_AsMVT(mvtgeom, %s)
+        FROM mvtgeom;', z, x, y, z, x, y, buffer, quote_ident(stormtable), quote_literal(timestep), buffer, quote_literal('public.region3_sim_storms_bufopt')
+    )
+    INTO result;
+    RETURN result;
   END IF;
 END
 $$
