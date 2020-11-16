@@ -74,6 +74,11 @@ def ingestData(dirpath, innc):
 
     file.close()
 
+    with open(dirpath+'ingest/'+tablename+'_1545.csv', 'a') as file:
+        file.write('timestamp\n')
+
+    file.close()
+
     os.chdir(dirpath+'nc')
     if len([f for f in glob.glob("csvfort64")]) == 0:
         os.mkdir("csvfort64")
@@ -101,39 +106,47 @@ def ingestData(dirpath, innc):
         node = np.arange(ncells)
 
         for i in range(ntime):
-            start_time = time.time()
+            dminute = str(dtime[i]).split(':')[1] 
 
-            try:
-                u_vel_data = nc.variables['u-vel'][i,:].data
-                v_vel_data = nc.variables['v-vel'][i,:].data
-            except RuntimeWarning:
-                sys.exit('*** DeprecationWarning: elementwise comparison failed; this will raise an error in the future.')
+            if dminute == '00' or dminute == '30': 
+                start_time = time.time()
 
-            findex = np.where(u_vel_data==min(u_vel_data))
-            u_vel_data[findex] = np.nan
-            findex = np.where(v_vel_data==min(v_vel_data))
-            v_vel_data[findex] = np.nan
+                try:
+                    u_vel_data = nc.variables['u-vel'][i,:].data
+                    v_vel_data = nc.variables['v-vel'][i,:].data
+                except RuntimeWarning:
+                    sys.exit('*** DeprecationWarning: elementwise comparison failed; this will raise an error in the future.')
 
-            timestamp = np.array([str(dtime[i])] * ncells)
+                findex = np.where(u_vel_data==min(u_vel_data))
+                u_vel_data[findex] = np.nan
+                findex = np.where(v_vel_data==min(v_vel_data))
+                v_vel_data[findex] = np.nan
 
-            df = pd.DataFrame({'node': node, 'u_vel': u_vel_data, 'v_vel': v_vel_data, 'timestamp': timestamp}, columns=['node', 'u_vel', 'v_vel', 'timestamp'])
+                timestamp = np.array([str(dtime[i])] * ncells)
 
-            outcsvfile = "_".join(innc.split('/')[len(innc.split('/'))-1].split('_')[0:2]) + '_' + \
-                  str("".join("".join(str(dtime[0]).split('-')).split(':'))) + '.fort.64.csv'
-            df.to_csv('csvfort64/'+outcsvfile, encoding='utf-8', header=True, index=False)
+                df = pd.DataFrame({'node': node, 'u_vel': u_vel_data, 'v_vel': v_vel_data, 'timestamp': timestamp}, columns=['node', 'u_vel', 'v_vel', 'timestamp'])
 
-            stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort64/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
-            output = stream.read()
+                outcsvfile = "_".join(innc.split('/')[len(innc.split('/'))-1].split('_')[0:2]) + '_' + \
+                      str("".join("".join(str(dtime[0]).split('-')).split(':'))) + '.fort.64.csv'
+                df.to_csv('csvfort64/'+outcsvfile, encoding='utf-8', header=True, index=False)
 
-            os.remove('csvfort64/'+outcsvfile)
+                stream = os.popen('timescaledb-parallel-copy --db-name reg3sim --connection "host=localhost user=data password=adcirc sslmode=disable" --table '+tablename+' --file '+'csvfort64/'+outcsvfile+' --skip-header --workers 4 --copy-options "CSV"')
+                output = stream.read()
 
-            stop_time = time.time()
-            time_lapsed = stop_time - start_time
+                os.remove('csvfort64/'+outcsvfile)
 
-            with open(dirpath+'ingest/'+tablename+'.csv', 'a') as file:
-                file.write(output.strip()+','+str(time_lapsed)+'\n')
+                stop_time = time.time()
+                time_lapsed = stop_time - start_time
 
-            file.close()
+                with open(dirpath+'ingest/'+tablename+'.csv', 'a') as file:
+                    file.write(output.strip()+','+str(time_lapsed)+'\n')
+
+                file.close()
+            else:
+                with open(dirpath+'ingest/'+tablename+'_1545.csv', 'a') as file:
+                    file.write(str(dtime[i])+'\n')
+
+                file.close()
 
 dirpath = "/home/data/ingestProcessing/"
 storm = sys.argv[1]

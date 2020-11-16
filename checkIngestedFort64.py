@@ -74,8 +74,14 @@ def getStormPGStats(storm):
 
 
 def getStormNCStats(storm):
+    stormtable = storm.lower()+'_fort64'
     dirpath = '/home/data/ingestProcessing/'
     ncvel = xr.open_dataset(dirpath+'nc/'+storm.lower()+'_fort.64.nc', drop_variables=['neta', 'nvel'])
+
+    with open(dirpath+'ingest/'+stormtable+'_1545.csv', 'a') as file:
+        file.write('timestamp\n')
+
+    file.close()
 
     veltime = ncvel.variables['time'][:].data
 
@@ -85,26 +91,34 @@ def getStormNCStats(storm):
 
     for i in range(len(veltime)):
         timestamp = str(veltime[i])
+        dminute = str(veltime[i]).split(':')[1]
 
-        uvel_data = ncvel.variables['u-vel'][i,:].data
-        uvelmin = str(np.nanmin(uvel_data))
-        uvelmax = str(np.nanmax(uvel_data))
-        uvelmean = str(np.nanmean(uvel_data))
-        uvelmedian = str(np.nanmedian(uvel_data))
-        uvelstd = str(np.nanstd(uvel_data))
-        uvelcount = str(len(np.argwhere(~np.isnan(uvel_data))))
-        uvelnan = str(len(np.argwhere(np.isnan(uvel_data))))
+        if dminute == '00' or dminute == '30':
+            uvel_data = ncvel.variables['u-vel'][i,:].data
+            uvelmin = str(np.nanmin(uvel_data))
+            uvelmax = str(np.nanmax(uvel_data))
+            uvelmean = str(np.nanmean(uvel_data))
+            uvelmedian = str(np.nanmedian(uvel_data))
+            uvelstd = str(np.nanstd(uvel_data))
+            uvelcount = str(len(np.argwhere(~np.isnan(uvel_data))))
+            uvelnan = str(len(np.argwhere(np.isnan(uvel_data))))
 
-        vvel_data = ncvel.variables['v-vel'][i,:].data
-        vvelmin = str(np.nanmin(vvel_data))
-        vvelmax = str(np.nanmax(vvel_data))
-        vvelmean = str(np.nanmean(vvel_data))
-        vvelmedian = str(np.nanmedian(vvel_data))
-        vvelstd = str(np.nanstd(vvel_data))
-        vvelcount = str(len(np.argwhere(~np.isnan(vvel_data))))
-        vvelnan = str(len(np.argwhere(np.isnan(vvel_data))))
+            vvel_data = ncvel.variables['v-vel'][i,:].data
+            vvelmin = str(np.nanmin(vvel_data))
+            vvelmax = str(np.nanmax(vvel_data))
+            vvelmean = str(np.nanmean(vvel_data))
+            vvelmedian = str(np.nanmedian(vvel_data))
+            vvelstd = str(np.nanstd(vvel_data))
+            vvelcount = str(len(np.argwhere(~np.isnan(vvel_data))))
+            vvelnan = str(len(np.argwhere(np.isnan(vvel_data))))
 
-        f.write(timestamp+','+uvelmin+','+uvelmax+','+uvelmean+','+uvelmedian+','+uvelstd+','+uvelcount+','+uvelnan+','+vvelmin+','+vvelmax+','+vvelmean+','+vvelmedian+','+vvelstd+','+vvelcount+','+vvelnan+'\n')
+            f.write(timestamp+','+uvelmin+','+uvelmax+','+uvelmean+','+uvelmedian+','+uvelstd+','+uvelcount+','+uvelnan+','+vvelmin+','+vvelmax+','+vvelmean+','+vvelmedian+','+vvelstd+','+vvelcount+','+vvelnan+'\n')
+
+        else:
+            with open(dirpath+'stats/'+stormtable+'_1545.csv', 'a') as file:
+                file.write(str(timestamp)+'\n')
+
+            file.close()
 
     f.close()
 
