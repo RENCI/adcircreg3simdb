@@ -3,24 +3,33 @@
 
 #### Build docker images
 
-###### Change directory to build
+##### Change directory to build
 
 cd build
 
-###### Then run:
+The Dockerfile is currently setup for adcirc-db.edc.renci.org at RENCI. In the Dockerfile USER_ID and USER_GID are given
+the value of 1324, and PG_ID and PG_GID are given the value of 70. This has been done to enable write permission to the
+storage area defined by the volume, when creating the container. At RENCI the storage area is a shared area, and USER_GID
+70 is the group that is used to share the disk. This step my not be necessary if the person who creates the docker image 
+and the container also owns the disk space defined by volume. If this is the case the user can just user ther own user id 
+and group id for these values in the Dockerfile. 
+
+ENV USER=data GROUP=data USER_ID=???? USER_GID=???? PASSWORD=adcircdata CONDAENV=adcirc PG_USER=postgres PG_GROUP=postgres PG_ID=?? PG_GID=?? PG_PASSWORD=postgres
+
+##### Then run:
 
 ./buildimage.sh  
 ./createnetwork.sh
 
-###### When creating the container you need to define the volume where the postgresql data, and output data will be 
-###### written too. This disk space for this volume needs to large enough to write all of the Region 3 simulation 
-###### data. At RENCI we are using /projects/regionthree/ which is accessible on the dcirc-db.edc.renci.org VM.
-###### You can use you own directory path. To create the container you run the following command using you own
-###### directory path:
+When creating the container you need to define the volume where the postgresql data, and output data will be 
+written too. This disk space for this volume needs to large enough to write all of the Region 3 simulation 
+data. At RENCI we are using /projects/regionthree/ which is accessible on the dcirc-db.edc.renci.org VM.
+You can use you own directory path. To create the container you run the following command using you own
+directory path:
 
 ./createcontainer.sh /projects/regionthree
 
-###### Your now should be able to access the container shell using the following command:
+##### Your now should be able to access the container shell using the following command:
 
 docker exec -it region3db_container bash
 
