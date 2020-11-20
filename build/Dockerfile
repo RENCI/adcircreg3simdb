@@ -9,7 +9,7 @@ LABEL version="1.0"
 LABEL description="regin3db image with Dockerfile."
 
 # Set user environment info, USER_ID and USER_GID are 1324, and PG_ID and PG_GID are 70 on adcric-db. These are specific
-# to the setup at RENCI, to enable write permission to disk storaga space defined in the volume. The USER_ID, USER_GID, 
+# to the setup at RENCI, to enable write permission to disk storage space defined in the volume. The USER_ID, USER_GID, 
 # and PG_GID need to be changed to ones relating to the storage area used in creating the volume.
 
 ENV USER=data GROUP=data USER_ID=1324 USER_GID=1324 PASSWORD=adcircdata CONDAENV=adcirc PG_USER=postgres PG_GROUP=postgres PG_ID=70 PG_GID=70 PG_PASSWORD=postgres
