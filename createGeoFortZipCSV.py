@@ -1,28 +1,40 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Import modules
 import os, sys
 import xarray as xr
 import pandas as pd
 import numpy as np
 
+"""
+Function that extracts longitude latitude, and bathymetry values from netcdf file, 
+and outputs them to csv file along with node values.
+"""
 def createZipFile(dirpath, infile):
+    # Read input netcdf file
     with xr.open_dataset(dirpath+'nc/'+infile) as nc:
+        # Get longitude, latitude and bathymetry values from netcdf file.
         lon =nc.variables['x'][:].data
         lat = nc.variables['y'][:].data
         bathymetry = nc.variables['depth'][:].data
 
+        # Create node array from number of cels in longitude.
         ncells = len(lon)
         node = np.arange(ncells)
 
+        # Create DataFrame and imput variables
         df = pd.DataFrame({'node': node, 'lon': lon, 'lat': lat, 'bathymetry': bathymetry}, columns=['node', 'lon', 'lat', 'bathymetry'])
 
+        # Write DataFrame to netcdf file.
         outcsvfile = dirpath+'csv/Region3Geo.csv'
         df.to_csv(outcsvfile, encoding='utf-8', header=True, index=False)
 
 
+# Define directory path, in docker container, to output csv file.
 dirpath = '/home/data/ingestProcessing/'
-#infile = 'bp1_dp1r2b1c2h1l1_fort.63_mod.nc'
+# Create input file name from sys argv input.
 infile = sys.argv[1].lower()+'_fort.63_mod.nc'
+# Create csv output file.
 createZipFile(dirpath, infile)
 
