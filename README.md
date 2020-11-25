@@ -24,10 +24,17 @@ ENV USER=data GROUP=data USER_ID=???? USER_GID=???? PASSWORD=adcircdata CONDAENV
 When creating the container you need to define the volume where the postgresql data, and output data will be 
 written too. This disk space for this volume needs to be large enough to write all of the Region 3 simulation 
 data. At RENCI we are using /projects/regionthree/ which is accessible on the dcirc-db.edc.renci.org VM.
-You can use your own directory path. To create the container you run the following command using you own
-directory path:
+You can use your own directory path. However, make sure you create the "ingestProcessing" and "dockerstorage" 
+directories:  
 
-./createcontainer.sh /projects/regionthree
+	mkdir /your/directory/path/ingestProcessing  
+        mkdir /your/dirctory/path/dockerstorage  
+
+before creating the container, otherwise docker will create these directories as root. To create 
+the container you run the following command using you own
+directory path:  
+
+./createcontainer.sh /your/directory/path  
 
 ##### You now should be able to access the container shell using the following command:
 
