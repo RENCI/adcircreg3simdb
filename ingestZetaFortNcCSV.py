@@ -18,6 +18,13 @@ warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 # Function that downloads netcdf file from RENCI THREDDS server, using wget.
 def getRegion3NetCDF4(dirpath, storm):
+    """
+    Make nc directory, if it does not already exist. The nc directory stores the
+    netcdf file downloaded from the RENCI THREDDS server.
+    """
+    if len([f for f in glob.glob(dirpath+"nc")]) == 0:
+        os.mkdir(dirpath+"nc")
+
     # URL to ADCIRC Region III Simulation fort63 data.
     url = 'http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/fort.63_mod.nc'
     os.chdir(dirpath+'nc')
