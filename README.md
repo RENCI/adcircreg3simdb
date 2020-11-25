@@ -27,7 +27,7 @@ data. At RENCI we are using /projects/regionthree/ which is accessible on the dc
 You can use your own directory path. However, make sure you create the "ingestProcessing" and "dockerstorage" 
 directories:  
 
-	mkdir /your/directory/path/ingestProcessing  
+        mkdir /your/directory/path/ingestProcessing  
         mkdir /your/dirctory/path/dockerstorage  
 
 before creating the container, otherwise docker will create these directories as root. To create 
