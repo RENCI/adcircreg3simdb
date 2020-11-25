@@ -1,18 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Import modules.
 import psycopg2, glob, sys
 from psycopg2.extensions import AsIs
 
+# This function creates geometry table for clustered geometry.
 def creategeomtable(cluster):
+    # Devine name of cluster geometry table.
     tablename = 'r3sim_fort_geom_'+cluster
     try:
+        # Open connection to reg3sim database.
         conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
         cur.execute("""SET STANDARD_CONFORMING_STRINGS TO ON""")
         cur.execute("""BEGIN""")
+        # Create cluster geometry table.
         cur.execute("""CREATE TABLE %(table_name)s (
                 node INTEGER PRIMARY KEY,
                 lon  NUMERIC,
@@ -32,17 +37,23 @@ def creategeomtable(cluster):
         if conn is not None:
             conn.close()
 
+# This function insert clustered geometry into cluster geometry table.
 def insertgeomtable(cluster):
+    # Define input geometry table name, where the clusters have been derined.
     intablename = 'r3sim_fort_geom'
+    # Define output geometry table name, where the clustered geometry will be inserted.
     outtablename = 'r3sim_fort_geom_'+cluster
+    # Defind name of cluster geometry table index.
     indexname = 'r3sim_fort_geom_'+cluster+'_index'
     try:
+        # Open connection to reg3sim database.
         conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
         cur.execute("""SET STANDARD_CONFORMING_STRINGS TO ON""")
         cur.execute("""BEGIN""")
+        # Insert cluster geometry into cluster geometry table. 
         cur.execute("""INSERT INTO %(out_table_name)s(node, lat, lon, bathymetry)
                 SELECT node, lat, lon, bathymetry
                    FROM %(in_table_name)s
@@ -75,7 +86,9 @@ def insertgeomtable(cluster):
         if conn is not None:
             conn.close()
 
-# Runs the programs.
+# Get cluster number from sys argv input.
 cluster = sys.argv[1]
+# Create geometry table to store clustered geometry.
 creategeomtable(cluster)
+# Insert clustered geometry into cluster geometry table.
 insertgeomtable(cluster)

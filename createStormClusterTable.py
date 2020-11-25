@@ -1,18 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Import modules.
 import psycopg2, glob, sys
 from psycopg2.extensions import AsIs
 
+This function creates hypertable table to store clustered variable data.
 def createstormtable(storm, cluster, timeinterval):
     tablename = storm.lower()+'_fort63_'+cluster
     try:
+        # Open connection to reg3sim database.
         conn = psycopg2.connect("dbname='reg3sim' user='data' host='localhost' port='5432' password='adcirc'")
         cur = conn.cursor()
 
         cur.execute("""SET CLIENT_ENCODING TO UTF8""")
         cur.execute("""SET STANDARD_CONFORMING_STRINGS TO ON""")
         cur.execute("""BEGIN""")
+        # Create clusterd variable table.
         cur.execute("""CREATE TABLE %(table_name)s (
                 node INTEGER,
                 zeta NUMERIC,
@@ -75,8 +79,10 @@ def intostormtable(storm, cluster):
         if conn is not None:
             conn.close()
 
-# Runs the programs.
+# Get storm track, and cluster number from sys argv input.
 storm = sys.argv[1]
 cluster = sys.argv[2]
+# Create cluster variable table, to store clustered variables.
 createstormtable(storm, cluster, "2 hour")
+# Insert clustered variables into cluster variable table.
 intostormtable(storm, cluster)
