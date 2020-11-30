@@ -72,7 +72,7 @@ conda activate adcirc
 sg postgres -c './ingestZetaFortNcCSV.py storm_name'  
 sg postgres -c './ingestSwanAllNcCSV.py storm_name'  
 sg postgres -c './ingestVelFortNcCSV.py storm_name'  
-sg postgres -c './createGeoFortZipCSV.py storm_name'  
-sg postgres -c './ingestGeoFortCSV.py'  
+sg postgres -c './createGeoNcCSV.py storm_name'  
+sg postgres -c './ingestGeoCSV.py'  
 
 ##### example storm name:  BP1_dp1r1b1c1h1l1
