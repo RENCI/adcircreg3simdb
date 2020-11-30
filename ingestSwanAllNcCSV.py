@@ -25,7 +25,7 @@ def getRegion3NetCDF4(dirpath, storm):
         os.mkdir(dirpath+"nc")
 
     # URLs to ADCIRC Region III Simulation swan63 data.
-    urls = ['http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_HS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/swan_TPS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'l1_X_sh/swan_DIR.63_mod.nc']
+    urls = ['http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_HS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_TPS.63_mod.nc','http://tds.renci.org:8080/thredds/fileServer/RegionThree-Solutions/Simulations/'+storm[0:3].upper()+storm[3:len(storm)]+'_X_sh/swan_DIR.63_mod.nc']
     os.chdir(dirpath+'nc/')
 
     # Download files using wget.
