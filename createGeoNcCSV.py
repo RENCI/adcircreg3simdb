@@ -11,7 +11,7 @@ import numpy as np
 Function that extracts longitude latitude, and bathymetry values from netcdf file, 
 and outputs them to csv file along with node values.
 """
-def createZipFile(dirpath, infile):
+def createCSVFile(dirpath, infile):
     # Read input netcdf file
     with xr.open_dataset(dirpath+'nc/'+infile) as nc:
         # Get longitude, latitude and bathymetry values from netcdf file.
@@ -36,5 +36,5 @@ dirpath = '/home/data/ingestProcessing/'
 # Create input file name from sys argv input.
 infile = sys.argv[1].lower()+'_fort.63_mod.nc'
 # Create csv output file.
-createZipFile(dirpath, infile)
+createCSVFile(dirpath, infile)
 
