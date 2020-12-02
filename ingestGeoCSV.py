@@ -24,7 +24,7 @@ def ingestGeo():
                 {'table_name': AsIs(tablename)})
 
         # Read node, latitude, longitude, and bathymetry values from csv file.
-        with open('/home/data/csv/Region3Geo.csv','r') as f:
+        with open('/home/data/ingestProcessing/csv/Region3Geo.csv','r') as f:
             next(f) # Skip the header row.
             cur.copy_from(f,tablename,sep=',')
 

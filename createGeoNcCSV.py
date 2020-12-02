@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Import modules
-import os, sys
+import os, sys, glob
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -12,6 +12,13 @@ Function that extracts longitude latitude, and bathymetry values from netcdf fil
 and outputs them to csv file along with node values.
 """
 def createCSVFile(dirpath, infile):
+    """
+    Make csv directory, if it does not already exist. The csv directory stores the
+    file created by this program.
+    """
+    if len([f for f in glob.glob(dirpath+"csv")]) == 0:
+        os.mkdir(dirpath+"csv")
+
     # Read input netcdf file
     with xr.open_dataset(dirpath+'nc/'+infile) as nc:
         # Get longitude, latitude and bathymetry values from netcdf file.
