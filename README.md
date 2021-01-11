@@ -42,7 +42,7 @@ docker exec -it region3db_container bash
 
 #### If you are using the container with volumes you will need to issue the following commands as postgres:
 
-su postgres 
+su postgres  
 bash  
 cd /var/local/postgresql  
 mv /var/lib/postgresql/11 .  
