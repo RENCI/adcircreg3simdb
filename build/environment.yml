@@ -11,3 +11,4 @@ dependencies:
       - psycopg2-binary
       - wget
       - vt2geojson
+      - geodex
